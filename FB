@@ -131,6 +131,8 @@ def main():
 main()
 #-----------------------------------雄哥--------------------
 #把檔案弄出來 切
+import pandas as pd
 data = pd.read_csv("output1104.csv")
-df = data #看你要不要df 我是怕動到原始檔案
+df = data
 df[['內容','切']] = df['內容'].str.split('讚留言',expand=True)
+df[['內容','切']] = df['內容'].str.split('分享對象',expand=True)
