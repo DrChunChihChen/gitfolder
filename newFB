@@ -1,0 +1,136 @@
+import pandas as pd
+import re, time, requests
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import re
+import csv
+
+lst = ['讚', '·', '回覆']
+
+url = 'https://www.facebook.com/groups/599492557498340'
+
+script1 = """
+var elements = document.getElementsByTagName("span");
+for (var i = 0; i < elements.length; i++) { 
+    if (elements[i].innerText.includes('檢視另') || elements[i].innerText.includes('查看另')) { 
+        elements[i].click(); 
+    }
+}
+"""
+
+click_login = """
+var elements = document.getElementsByClassName('a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 ltmttdrg g0qnabr5');
+for (var i = 0; i < elements.length; i++) {
+    if (elements[i].innerText.includes('登入')) {
+        elements[i].click();
+    } 
+}
+"""
+
+# 查看更多留言
+script2 = """
+function check() {
+    var elements = document.getElementsByTagName('span');
+    var count = 0;
+    for (var i = 0; i < elements.length; i++) {
+        if(elements[i].innerText.includes('查看更多')) {
+            count++;
+            elements[i].click();
+        }
+    }
+    return count;
+}
+
+var x = setInterval(
+    function() {
+        var count = check();
+        if (count == 0) {
+            clearInterval(x);
+        }
+    }, 5000
+)
+"""
+
+
+def login():
+    global driver
+    driver = webdriver.Chrome(r'D:\pythonProject10_GWO\chromedriver.exe')
+    driver.get(url)
+    driver.execute_script(click_login)
+    time.sleep(2)
+    email_element = driver.find_element_by_id('email').send_keys("你的ID")
+    pwd_element = driver.find_element_by_id('pass').send_keys('你的密碼')
+    driver.get(url)
+
+
+def save(s):
+    with open('data.txt', 'w', encoding='utf8') as writer:
+        writer.write(s)
+
+def get_page(src='facebook'):
+    if src == 'facebook':
+        login()
+        driver.get(url)
+#         n = 500
+        for i in range(0,350,1):
+            time.sleep(2)
+            driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
+
+        driver.execute_script(script1)
+        time.sleep(1)
+        driver.execute_script(script2)
+        save(driver.page_source)
+        return driver.page_source
+    else:
+        with open('data.txt', 'r', encoding='utf8') as reader:
+            return reader.read()
+
+    # with open('data.txt', 'w', encoding='utf8') as writer:
+    #    writer.write(driver.page_source)
+    # return
+
+
+regex = re.compile('分享對象：花花當沖分享社的成員(.*?)[0-9 ]+則留(.*?)(?:分享對象：)', flags=re.DOTALL)
+import csv
+
+
+def main():    
+    i = 0
+ 
+    with open('output1107.csv', 'w', newline='', encoding='utf-8-sig') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['排序','時間', '內容','留言'])
+        page = get_page()          # 'facebook'
+        #page = get_page('data.txt') # 'from data.txt'
+        soup = BeautifulSoup(page,'html.parser')
+        articles = soup.find_all('div', {'role':'article','class':'lzcic4wl'})
+        print(len(articles))
+        text = ''
+        for article in articles:
+            main_article = ''
+            sub_article = ''
+            posttimes = article.find_all('b', class_='t5a262vz nc684nl6 ihxqhq3m l94mrbxd aenfhxwr l9j0dhe7 myohyog2 b6zbclly sdhka5h4') 
+            j = len(posttimes)
+            for posttime in posttimes[:j]:
+                k = 1
+                global posttime_out
+                if k < j:
+                    posttime_out = posttimes[k].text
+                k += 2
+            if article.has_attr('aria-posinset'):
+                main_article = article.text
+            else:
+                sub_article = article.text
+            writer.writerow([i, posttime_out,main_article,sub_article])
+            i += 1
+            
+        # 開啟輸出的 CSV 檔案
+    
+        for each in regex.findall(text):
+            print(each[0])
+            print(*[re.sub('· ([\d ]+小時|[\d ]+分鐘|[\d ]+天)', '', x) for x in each[1].split(' · 讚 · 回覆')], sep='\n')
+            print()
+        
+    input()
+    
+main()
