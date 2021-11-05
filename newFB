@@ -111,7 +111,7 @@ def main():
             sub_article = ''
             posttimes = article.find_all('b', class_='t5a262vz nc684nl6 ihxqhq3m l94mrbxd aenfhxwr l9j0dhe7 myohyog2 b6zbclly sdhka5h4') 
             j = len(posttimes)
-            for posttime in posttimes[:j]:
+            for posttime in posttimes:
                 k = 1
                 global posttime_out
                 if k < j:
