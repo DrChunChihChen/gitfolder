@@ -4,6 +4,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
 import csv
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 lst = ['讚', '·', '回覆']
 
@@ -58,8 +60,8 @@ def login():
     driver.get(url)
     driver.execute_script(click_login)
     time.sleep(2)
-    email_element = driver.find_element_by_id('email').send_keys("你的ID")
-    pwd_element = driver.find_element_by_id('pass').send_keys('你的密碼')
+    email_element = driver.find_element_by_id('email').send_keys("0933124027\t")
+    pwd_element = driver.find_element_by_id('pass').send_keys('temp0316\n')
     driver.get(url)
 
 
@@ -67,12 +69,13 @@ def save(s):
     with open('data.txt', 'w', encoding='utf8') as writer:
         writer.write(s)
 
+
 def get_page(src='facebook'):
     if src == 'facebook':
         login()
         driver.get(url)
-#         n = 500
-        for i in range(0,350,1):
+        #         n = 500
+        for i in range(0, 650, 2):
             time.sleep(2)
             driver.execute_script('window.scrollTo(0, document.body.scrollHeight);')
 
@@ -94,22 +97,24 @@ regex = re.compile('分享對象：花花當沖分享社的成員(.*?)[0-9 ]+則
 import csv
 
 
-def main():    
+def main():
     i = 0
- 
-    with open('output1107.csv', 'w', newline='', encoding='utf-8-sig') as csvfile:
+    chrome_options = Options()  # 啟動無頭模式
+    chrome_options.add_argument('--headless')  # 規避google bug
+    chrome_options.add_argument('--disable-gpu')
+    with open('output11_320_4.csv', 'w', newline='', encoding='utf-8-sig') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['排序','時間', '內容','留言'])
-        page = get_page()          # 'facebook'
-        #page = get_page('data.txt') # 'from data.txt'
-        soup = BeautifulSoup(page,'html.parser')
-        articles = soup.find_all('div', {'role':'article','class':'lzcic4wl'})
+        writer.writerow(['排序', '時間', '內容', '留言'])
+        page = get_page()  # 'facebook'
+        # page = get_page('data.txt') # 'from data.txt'
+        soup = BeautifulSoup(page, 'html.parser')
+        articles = soup.find_all('div', {'role': 'article', 'class': 'lzcic4wl'})
         print(len(articles))
         text = ''
         for article in articles:
             main_article = ''
             sub_article = ''
-            posttimes = article.find_all('b', class_='t5a262vz nc684nl6 ihxqhq3m l94mrbxd aenfhxwr l9j0dhe7 myohyog2 b6zbclly sdhka5h4') 
+            posttimes = article.find_all('b', class_='t5a262vz nc684nl6 ihxqhq3m l94mrbxd aenfhxwr l9j0dhe7 myohyog2 b6zbclly sdhka5h4')
             j = len(posttimes)
             for posttime in posttimes:
                 k = 1
@@ -121,16 +126,25 @@ def main():
                 main_article = article.text
             else:
                 sub_article = article.text
-            writer.writerow([i, posttime_out,main_article,sub_article])
+            writer.writerow([i, posttime_out, main_article, sub_article])
             i += 1
-            
+
         # 開啟輸出的 CSV 檔案
-    
+
         for each in regex.findall(text):
             print(each[0])
             print(*[re.sub('· ([\d ]+小時|[\d ]+分鐘|[\d ]+天)', '', x) for x in each[1].split(' · 讚 · 回覆')], sep='\n')
             print()
-        
+
     input()
-    
+
+
 main()
+
+
+
+# import pandas as pd
+# data = pd.read_csv("output11_300.csv")
+# df = data
+# df[['內容','主要發文內容']] = df['內容'].str.split(' · 分享對象：花花當沖分享社的成員',expand=True)
+# df.to_csv("output11_300切.csv", encoding="utf_8_sig")
