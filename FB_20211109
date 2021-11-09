@@ -60,8 +60,8 @@ def login():
     driver.get(url)
     driver.execute_script(click_login)
     time.sleep(2)
-    email_element = driver.find_element_by_id('email').send_keys("0933124027\t")
-    pwd_element = driver.find_element_by_id('pass').send_keys('temp880316\n')
+    email_element = driver.find_element_by_id('email').send_keys("你自己的帳號\t")
+    pwd_element = driver.find_element_by_id('pass').send_keys('你自己的密碼\n')
     driver.get(url)
 
 
