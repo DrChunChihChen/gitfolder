@@ -1,0 +1,34 @@
+import webbrowser
+import pyautogui
+import time
+import os
+url='https://mbasic.facebook.com/groups/599492557498340/?refid=27'
+webbrowser.open_new(url) #Open webpage in default browser (firefox)time.sleep(1.2)
+for i in range(1,10,1):
+    pyautogui.moveTo(2180,828,1)
+    time.sleep(2)
+    pyautogui.click()
+    pyautogui.hotkey('ctrl', 'u')
+    time.sleep(2)
+    pyautogui.hotkey('ctrl', 's')
+    pyautogui.typewrite("test2_%d " %i)
+    time.sleep(2)
+    pyautogui.press('enter')
+    time.sleep(1)
+    pyautogui.hotkey('ctrl', 'w')
+    time.sleep(3)
+
+    pyautogui.press('space') 
+    pyautogui.press('space') 
+
+    pyautogui.moveTo(1243,1046,1)
+#滑鼠左鍵點擊一下
+    pyautogui.click()
+
+#暫停1秒，等待網頁載入
+    pyautogui.PAUSE=5
+# pyautogui.hotkey('ctrl', 'page down')
+
+
+#找滑鼠定位
+#pyautogui.displayMousePosition()
