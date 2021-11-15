@@ -32,3 +32,36 @@ for i in range(1,10,1):
 
 #找滑鼠定位
 #pyautogui.displayMousePosition()
+
+
+
+#處理每個HTML 自己寫loop!!!!!!!#
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(text, features="html.parser")
+
+for script in soup(["script", "style"]):
+    script.extract()    # rip it out
+
+# get text
+text = soup.get_text()
+lines = (line.strip() for line in text.splitlines())
+# break multi-headlines into a line each
+chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+# drop blank lines
+text = '\n'.join(chunk for chunk in chunks if chunk)
+
+split_up = [s.strip() for s in text.split("Save · More")]  #每個留言
+posttimes = soup.find_all("abbr") #每個時間
+
+#請寫 留言 時間的合併code 
+
+
+
+
+
+
+
+
+
+
