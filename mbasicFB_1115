@@ -1,0 +1,59 @@
+import pandas as pd
+import re, time, requests
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import re
+import csv
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from pyquery import PyQuery as pq
+
+def setup_driver(profile: str, headless=False):
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')
+    # chrome_options.add_argument(f'--user-data-dir=${profile}')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    prefs = {"profile.managed_default_content_settings.images": 2}
+    chrome_options.add_experimental_option("prefs", prefs)
+    if headless:
+        chrome_options.add_argument('--headless')
+    driver = webdriver.Chrome(r'C:\Users\gawyf\Downloads\chromedriver.exe', options=chrome_options)
+    return driver
+
+
+url_login = 'https://mbasic.facebook.com/login.php?next=https%3A%2F%2Fmbasic.facebook.com%2Fhome.php%3Frefid%3D18&refsrc=deprecated&refid=18&_rdr'
+url = 'https://mbasic.facebook.com/groups/929337083811013'
+d = setup_driver(r'C:\Users\gawyf\Downloads')
+d.get(url_login
+
+d.get(url)
+more_post = pq(d.page_source)('#m_group_stories_container > div > a')
+print('https://mbasic.facebook.com' + more_post.attr('href'))
+
+def get_nextpage_url(html):
+    more_post = pq(html)('#m_group_stories_container > div > a')
+    return 'https://mbasic.facebook.com' + more_post.attr('href')
+    
+def get_posts(html):
+    return [x.attrib['href'] for x in pq(html)('footer > div:nth-child(2) > a:nth-child(5)')]
+
+def save_posts(html):
+    with open(f'{time.time()}.txt', 'w') as writer:
+        for g in get_posts(html):
+            writer.write(g + '\n')
+            
+next_url = url
+for _ in range(4):
+    d.get(next_url)
+    save_posts(d.page_source)
+    next_url = get_nextpage_url(d.page_source)
+    print(next_url)
+    time.sleep(2)
+    
+    
+#可以先把URL印出來看看有沒有內容
+
+url = 'https://mbasic.facebook.com/groups/929337083811013?bacr=1636815718%3A4549350938476258%3A4549350938476258%2C0%2C0%3A7%3AKw%3D%3D&multi_permalinks&refid=18'
+data = requests.get(url)
+page_soup = BeautifulSoup(data.content, 'html.parser')
