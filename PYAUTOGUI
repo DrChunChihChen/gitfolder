@@ -37,12 +37,11 @@ for i in range(1,10,1):
 
 #處理每個HTML 自己寫loop!!!!!!!#
 from bs4 import BeautifulSoup
-
-soup = BeautifulSoup(text, features="html.parser")
-
+f=codecs.open("test2_6.html", 'r', 'utf-8')
+document= BeautifulSoup(f.read()).get_text()
+soup = BeautifulSoup(document, features="html.parser")
 for script in soup(["script", "style"]):
     script.extract()    # rip it out
-
 # get text
 text = soup.get_text()
 lines = (line.strip() for line in text.splitlines())
@@ -58,7 +57,12 @@ posttimes = soup.find_all("abbr") #每個時間
 
 
 
-
+#取出每頁的留言位置
+for link in soup.findAll('a', {'class': "dw"}):
+    try:
+        print(link['href'])
+    except KeyError:
+        pass
 
 
 
